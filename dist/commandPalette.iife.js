@@ -33,7 +33,8 @@ var LightCmdPalette = (() => {
       altKey: false
       // Do not use Alt key by default
     };
-    const config = { ...defaultOptions, ...options };
+    const configs = (Array.isArray(options) ? options : [options]).map((option) => ({ ...defaultOptions, ...option }));
+    const matchesConfig = (event, config) => config.ctrlKey === event.ctrlKey && config.shiftKey === event.shiftKey && config.altKey === event.altKey && event.key.toUpperCase() === config.shortcutKey.toUpperCase();
     document.addEventListener("DOMContentLoaded", () => {
       const dialog = document.createElement("dialog");
       dialog.id = "command-palette";
@@ -108,7 +109,7 @@ var LightCmdPalette = (() => {
         }
       }, { capture: true });
       document.addEventListener("keydown", (event) => {
-        if (config.ctrlKey === event.ctrlKey && config.shiftKey === event.shiftKey && config.altKey === event.altKey && event.key.toUpperCase() === config.shortcutKey.toUpperCase()) {
+        if (configs.some((config) => matchesConfig(event, config))) {
           event.preventDefault();
           event.stopImmediatePropagation();
           if (dialog.open) {

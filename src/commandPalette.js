@@ -6,8 +6,16 @@ export function initializeCommandPalette (commands, options = {}) {
     altKey: false // Do not use Alt key by default
   }
 
-  // Merge default options with user-provided options
-  const config = { ...defaultOptions, ...options }
+  // Options may be a single object or an array of objects (one per shortcut).
+  // Each entry is merged over the defaults, so omitted keys keep default values.
+  const configs = (Array.isArray(options) ? options : [options])
+    .map((option) => ({ ...defaultOptions, ...option }))
+
+  const matchesConfig = (event, config) =>
+    (config.ctrlKey === event.ctrlKey) &&
+    (config.shiftKey === event.shiftKey) &&
+    (config.altKey === event.altKey) &&
+    (event.key.toUpperCase() === config.shortcutKey.toUpperCase())
 
   document.addEventListener('DOMContentLoaded', () => {
     const dialog = document.createElement('dialog')
@@ -96,13 +104,9 @@ export function initializeCommandPalette (commands, options = {}) {
     }, { capture: true })
 
     // Open command palette with Ctrl+Shift+H; pressing the shortcut again closes it
+    // Toggle the palette with any of the configured shortcuts
     document.addEventListener('keydown', (event) => {
-      if (
-        (config.ctrlKey === event.ctrlKey) &&
-        (config.shiftKey === event.shiftKey) &&
-        (config.altKey === event.altKey) &&
-        (event.key.toUpperCase() === config.shortcutKey.toUpperCase())
-      ) {
+      if (configs.some((config) => matchesConfig(event, config))) {
         event.preventDefault()
         event.stopImmediatePropagation()
         if (dialog.open) {

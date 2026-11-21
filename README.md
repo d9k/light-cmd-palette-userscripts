@@ -56,6 +56,23 @@ const options = {
 initializeCommandPalette(commands, options)
 ```
 
+Pass an array of option objects to register several shortcuts for the same
+palette (each entry is merged over the defaults, so you can omit any field):
+
+```js
+const shortcuts = [
+    { shortcutKey: 'H' },                                 // Ctrl+Shift+H (defaults)
+    { shortcutKey: 'K', ctrlKey: true, shiftKey: false }, // Ctrl+K
+    { shortcutKey: 'O', ctrlKey: true, altKey: true, shiftKey: false } // Ctrl+Alt+O
+];
+
+initializeCommandPalette(commands, shortcuts)
+```
+
+Any of the registered shortcuts toggles the palette. Supported modifiers are
+`ctrlKey`, `shiftKey` and `altKey`; each entry is merged over the defaults, so
+a plain object (or no argument at all) still works exactly as before.
+
 ### Static files
 Light Command Palette can be included in your project by directly using the JavaScript and CSS files in the [`src`](./src) directory.
 
