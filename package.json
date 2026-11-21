@@ -7,7 +7,8 @@
   "scripts": {
     "lint:fix": "eslint --fix .",
     "lint": "eslint .",
-    "test": "playwright test"
+    "test": "playwright test",
+    "build:userscripts": "esbuild src/commandPalette.js --bundle --format=iife --global-name=LightCmdPalette --target=es2019 --outfile=dist/commandPalette.iife.js && mkdir -p dist && cp src/commandPalette.css dist/commandPalette.css"
   },
   "author": "Julian Mateu <julianmateu@gmail.com>",
   "repository": {
@@ -28,6 +29,7 @@
   "license": "MIT",
   "devDependencies": {
     "@playwright/test": "^1.41.1",
+    "esbuild": "0.25.12",
     "eslint": "^8.56.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.29.1",

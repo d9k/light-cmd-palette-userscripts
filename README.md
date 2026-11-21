@@ -1,3 +1,18 @@
+# Light Command Palette for userscripts
+
+This is fork of https://github.com/julianmateu/light-cmd-palette for usage with userscripts.
+
+Just run `npm run build:userscripts` to build.
+
+It can be `@require`d directly in a userscript:
+
+```js
+// @require      https://.../dist/commandPalette.iife.js
+LightCmdPalette.initializeCommandPalette(commands, options)
+```
+
+Demo: [`examples/index-iife.html`](./examples/index-iife.html). Run with `npx http-server examples`, open http://127.0.0.1/index-iife.html.
+
 # Light Command Palette
 [![Test](https://github.com/julianmateu/light-cmd-palette/actions/workflows/test.yml/badge.svg)](https://github.com/julianmateu/light-cmd-palette/actions/workflows/test.yml/badge.svg)
 

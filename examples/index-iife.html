@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Command Palette (IIFE bundle)</title>
+</head>
+<body>
+    <script src="./commandPalette.iife.js"></script>
+    <script>
+        // All page content below is injected programmatically, mirroring how a
+        // userscript bootstraps the palette: no static markup or styles in HTML.
+
+        const injectStylesheet = (href) => {
+            const link = document.createElement('link')
+            link.rel = 'stylesheet'
+            link.href = href
+            document.head.appendChild(link)
+        }
+
+        const injectStyle = (css) => {
+            const style = document.createElement('style')
+            style.textContent = css
+            document.head.appendChild(style)
+        }
+
+        injectStylesheet('./commandPalette.css')
+
+        injectStyle(`
+            body {
+                background-color: #fefefe;
+                line-height: 1.42857143;
+                color: #222;
+                font-size: 1.2em;
+                padding: 1em;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            kbd {
+                background-color: #eee;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+                box-shadow: 0 1px 0 #fff inset, 0 0 0 2px #fff inset, 0 2px 0 #ddd inset;
+                color: #333;
+                display: inline-block;
+                font-family: monospace;
+                font-size: 0.85em;
+                line-height: 1.4;
+                padding: 2px 4px;
+                white-space: nowrap;
+            }
+        `)
+
+        const h1 = document.createElement('h1')
+        h1.textContent = 'Command Palette test (IIFE, for userscripts)'
+        document.body.appendChild(h1)
+
+        const openHint = document.createElement('p')
+        openHint.innerHTML = 'Press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>H</kbd> to open the command palette.'
+        document.body.appendChild(openHint)
+
+        const escHint = document.createElement('p')
+        escHint.innerHTML = 'Press <kbd>Esc</kbd> to close the command palette.'
+        document.body.appendChild(escHint)
+
+        const enjoy = document.createElement('p')
+        enjoy.textContent = 'Enjoy!'
+        document.body.appendChild(enjoy)
+
+        const commands = [
+            { name: 'Print', action: () => window.print() },
+            { name: 'Alert', action: () => alert('Executed Command 2') }
+            // Add more commands here
+        ]
+
+        // The bundle registers a DOMContentLoaded listener, and this script runs
+        // synchronously while the document is still parsing, so it fires as expected.
+        LightCmdPalette.initializeCommandPalette(commands)
+    </script>
+</body>
+</html>
