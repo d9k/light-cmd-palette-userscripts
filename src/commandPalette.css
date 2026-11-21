@@ -48,6 +48,7 @@
     padding-inline: 10px;
     color: #999;
     border-top: 1px solid #ddd;
+    cursor: pointer;
 }
 
 .command-palette kbd {
