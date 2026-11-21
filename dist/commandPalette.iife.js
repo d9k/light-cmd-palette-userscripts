@@ -79,21 +79,30 @@ var LightCmdPalette = (() => {
       document.addEventListener("keydown", (event) => {
         const items = commandList.getElementsByTagName("li");
         if (event.key === "ArrowDown") {
+          event.preventDefault();
           currentIndex = (currentIndex + 1) % items.length;
           updateCommandList(commandInput.value);
         } else if (event.key === "ArrowUp") {
+          event.preventDefault();
           if (currentIndex <= 0) currentIndex = items.length;
           currentIndex = (currentIndex - 1) % items.length;
           updateCommandList(commandInput.value);
         } else if (event.key === "Enter" && currentIndex >= 0) {
+          event.preventDefault();
           items[currentIndex].click();
         } else if (event.key === "Escape") {
+          event.preventDefault();
           closeCommandPalette();
         }
       });
       document.addEventListener("keydown", (event) => {
         if (config.ctrlKey === event.ctrlKey && config.shiftKey === event.shiftKey && config.altKey === event.altKey && event.key.toUpperCase() === config.shortcutKey.toUpperCase()) {
-          openCommandPalette();
+          event.preventDefault();
+          if (dialog.open) {
+            closeCommandPalette();
+          } else {
+            openCommandPalette();
+          }
         }
       });
     });

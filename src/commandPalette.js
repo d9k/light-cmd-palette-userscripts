@@ -63,20 +63,24 @@ export function initializeCommandPalette (commands, options = {}) {
     document.addEventListener('keydown', (event) => {
       const items = commandList.getElementsByTagName('li')
       if (event.key === 'ArrowDown') {
+        event.preventDefault()
         currentIndex = (currentIndex + 1) % items.length
         updateCommandList(commandInput.value)
       } else if (event.key === 'ArrowUp') {
+        event.preventDefault()
         if (currentIndex <= 0) currentIndex = items.length
         currentIndex = (currentIndex - 1) % items.length
         updateCommandList(commandInput.value)
       } else if (event.key === 'Enter' && currentIndex >= 0) {
+        event.preventDefault()
         items[currentIndex].click()
       } else if (event.key === 'Escape') {
+        event.preventDefault()
         closeCommandPalette()
       }
     })
 
-    // Open command palette with Ctrl+Shift+H
+    // Open command palette with Ctrl+Shift+H; pressing the shortcut again closes it
     document.addEventListener('keydown', (event) => {
       if (
         (config.ctrlKey === event.ctrlKey) &&
@@ -84,7 +88,12 @@ export function initializeCommandPalette (commands, options = {}) {
         (config.altKey === event.altKey) &&
         (event.key.toUpperCase() === config.shortcutKey.toUpperCase())
       ) {
-        openCommandPalette()
+        event.preventDefault()
+        if (dialog.open) {
+          closeCommandPalette()
+        } else {
+          openCommandPalette()
+        }
       }
     })
   })
