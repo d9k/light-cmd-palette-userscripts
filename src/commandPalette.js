@@ -37,18 +37,44 @@ export function initializeCommandPalette (commands, options = {}) {
     })
 
     let currentIndex = -1
+    // When false, losing focus on the input must not close the palette (used for
+    // mouse clicks on command items: the item is not focusable, so pressing it
+    // blurs the input before the click event can run the command).
+    let closeOnInputUnfocus = true
 
     function openCommandPalette () {
-      document.getElementById('command-palette').open = true
+      if (dialog.open) return
+      // showModal() puts the palette in the top layer: host-page scripts can no
+      // longer intercept its keyboard events or move focus out of it, and the
+      // browser closes it natively on Escape. Fall back to lightbox mode for
+      // browsers without <dialog> support.
+      if (typeof dialog.showModal === 'function') {
+        dialog.showModal()
+      } else {
+        dialog.open = true
+      }
       commandInput.focus()
       updateCommandList('')
     }
 
     function closeCommandPalette () {
-      document.getElementById('command-palette').open = false
+      if (!dialog.open) return
+      if (typeof dialog.close === 'function') {
+        dialog.close()
+      } else {
+        dialog.open = false
+        commandInput.value = ''
+        currentIndex = -1
+      }
+    }
+
+    // Reset the state no matter how the dialog was closed (Escape, footer click,
+    // focus loss, native modal dismissal, ...).
+    dialog.addEventListener('close', () => {
+      closeOnInputUnfocus = true
       commandInput.value = ''
       currentIndex = -1
-    }
+    })
 
     function updateCommandList (input) {
       commandList.innerHTML = ''
@@ -60,6 +86,7 @@ export function initializeCommandPalette (commands, options = {}) {
         const li = document.createElement('li')
         li.textContent = cmd.name
         li.onclick = () => {
+          closeOnInputUnfocus = true
           cmd.action()
           closeCommandPalette()
         }
@@ -71,6 +98,31 @@ export function initializeCommandPalette (commands, options = {}) {
     }
 
     commandInput.addEventListener('input', (e) => updateCommandList(e.target.value))
+
+    // Some browsers treat the first Escape as "blur the field" (or the host page
+    // swallows it), so the palette closes only on the second press. Handle Escape
+    // directly on the input so the first press always closes the palette.
+    commandInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        event.preventDefault()
+        event.stopImmediatePropagation()
+        closeCommandPalette()
+      }
+    })
+
+    // In Firefox the first Escape only blurs the input, and we never see a key
+    // event we can catch; so treat any focus loss on the field as a request to
+    // close the palette. This also gives the usual "click outside closes" feel.
+    commandInput.addEventListener('focusout', (event) => {
+      if (!dialog.open || !closeOnInputUnfocus) return
+      // Focus moving to something inside the dialog must not close it.
+      if (dialog.contains(event.relatedTarget)) return
+      closeCommandPalette()
+    })
+
+    commandList.addEventListener('mousedown', () => {
+      closeOnInputUnfocus = false
+    })
 
     // Navigation keys are handled while the palette is open only, so the page
     // keeps its own arrow/Enter behaviour when the palette is closed.
